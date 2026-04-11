@@ -1,5 +1,5 @@
 import { getSession } from "@/server/auth"
-import { createFileRoute, redirect } from "@tanstack/react-router"
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/(app)/_")({
   component: RouteComponent,
@@ -13,5 +13,5 @@ export const Route = createFileRoute("/(app)/_")({
 })
 
 function RouteComponent() {
-  return <div>Hello "/(app)/_"!</div>
+  return <Outlet />
 }

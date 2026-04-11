@@ -4,8 +4,8 @@ import { createEnv } from "@t3-oss/env-core"
 export const env = createEnv({
   server: {
     NODE_ENV: z.enum(["development", "production"]),
-    DATABASE_URL: z.string().min(1, { error: "DATABASE_URL is required" }),
-    APP_URL: z.string().min(1, { error: "APP_URL is required" }),
+    DATABASE_URL: z.url().min(1, { error: "DATABASE_URL is required" }),
+    APP_URL: z.url().min(1, { error: "APP_URL is required" }),
     BETTER_AUTH_DOMAIN: z
       .string()
       .min(1, { error: "BETTER_AUTH_DOMAIN is required" }),
@@ -21,7 +21,7 @@ export const env = createEnv({
   },
   clientPrefix: "VITE_",
   client: {
-    VITE_APP_URL: z.string().min(1, { error: "VITE_APP_URL is required" }),
+    VITE_APP_URL: z.url().min(1, { error: "VITE_APP_URL is required" }),
   },
   runtimeEnv: {
     // server
