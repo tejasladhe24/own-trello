@@ -43,16 +43,20 @@ MIGRATIONS_DIR="/migrations"
 if [ -d "$MIGRATIONS_DIR" ]; then
   while IFS= read -r -d '' file; do
     filename=$(basename "$file")
-    applied=$(psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
-      -v ON_ERROR_STOP=1 -v filename="$filename" -t -c \
-      "SELECT COUNT(*) FROM _migrations WHERE filename = :'filename';" | xargs)
+    escaped_filename=$(printf "%s" "$filename" | sed "s/'/''/g")
 
-    if [ "$applied" -eq 0 ]; then
+    applied=$(psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
+      -v ON_ERROR_STOP=1 -t -c \
+      "SELECT COUNT(*) FROM _migrations WHERE filename = '$escaped_filename';" | xargs)
+
+    if [[ "$applied" == "0" ]]; then
       echo -e "${YELLOW}Applying migration: $filename${NC}"
+
       psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
-        -v ON_ERROR_STOP=1 -1 -v filename="$filename" \
+        -v ON_ERROR_STOP=1 -1 \
         -f "$file" \
-        -c "INSERT INTO _migrations (filename) VALUES (:'filename');"
+        -c "INSERT INTO _migrations (filename) VALUES ('$escaped_filename');"
+
       echo -e "${GREEN}✓ Applied: $filename${NC}"
     else
       echo -e "${YELLOW}⊘ Skipped: $filename${NC}"
