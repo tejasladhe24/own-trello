@@ -50,10 +50,9 @@ if [ -d "$MIGRATIONS_DIR" ]; then
     if [ "$applied" -eq 0 ]; then
       echo -e "${YELLOW}Applying migration: $filename${NC}"
       psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
-        -v ON_ERROR_STOP=1 -1 -f "$file"
-      psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
-        -v ON_ERROR_STOP=1 -v filename="$filename" -c \
-        "INSERT INTO _migrations (filename) VALUES (:'filename');"
+        -v ON_ERROR_STOP=1 -1 -v filename="$filename" \
+        -f "$file" \
+        -c "INSERT INTO _migrations (filename) VALUES (:'filename');"
       echo -e "${GREEN}✓ Applied: $filename${NC}"
     else
       echo -e "${YELLOW}⊘ Skipped: $filename${NC}"
