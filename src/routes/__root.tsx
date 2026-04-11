@@ -3,6 +3,8 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 
 import appCss from "../styles.css?url"
+import { NotFound } from "@/components/not-found"
+import { GlobalError } from "@/components/global-error"
 
 export const Route = createRootRoute({
   head: () => ({
@@ -26,15 +28,17 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: NotFound,
+  errorComponent: (props) => <GlobalError {...props} />,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="h-full h-screen">
         {children}
         <TanStackDevtools
           config={{
