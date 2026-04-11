@@ -41,21 +41,24 @@ CREATE TABLE IF NOT EXISTS _migrations (
 # -------------------------------
 MIGRATIONS_DIR="/migrations"
 if [ -d "$MIGRATIONS_DIR" ]; then
-  for file in $(find "$MIGRATIONS_DIR" -name "*.sql" -type f | sort); do
+  while IFS= read -r -d '' file; do
     filename=$(basename "$file")
-    applied=$(psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -t -c \
-      "SELECT COUNT(*) FROM _migrations WHERE filename='$filename';" | xargs)
+    applied=$(psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
+      -v ON_ERROR_STOP=1 -v filename="$filename" -t -c \
+      "SELECT COUNT(*) FROM _migrations WHERE filename = :'filename';" | xargs)
 
     if [ "$applied" -eq 0 ]; then
       echo -e "${YELLOW}Applying migration: $filename${NC}"
-      psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -f "$file"
-      psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c \
-        "INSERT INTO _migrations (filename) VALUES ('$filename');"
+      psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
+        -v ON_ERROR_STOP=1 -1 -f "$file"
+      psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" \
+        -v ON_ERROR_STOP=1 -v filename="$filename" -c \
+        "INSERT INTO _migrations (filename) VALUES (:'filename');"
       echo -e "${GREEN}✓ Applied: $filename${NC}"
     else
       echo -e "${YELLOW}⊘ Skipped: $filename${NC}"
     fi
-  done
+  done < <(find "$MIGRATIONS_DIR" -type f -name "*.sql" -print0 | sort -z)
 fi
 
 echo -e "${GREEN}Auth database initialization complete${NC}"

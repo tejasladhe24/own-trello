@@ -14,10 +14,7 @@ export const auth = betterAuth({
     },
   },
   database: drizzleAdapter(db, { provider: "pg" }),
-  trustedOrigins: [
-    // dev
-    "localhost",
-  ],
+  trustedOrigins: ["http://localhost:3000"],
   advanced: {
     defaultCookieAttributes: {
       domain: env.BETTER_AUTH_DOMAIN,
