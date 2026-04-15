@@ -1,5 +1,5 @@
 {
-  "id": "98262a2a-bb42-4cd1-be20-9c278424ff80",
+  "id": "b1edeff5-3898-4837-a996-792fc0fb8127",
   "prevId": "172097e9-6858-4a98-b38a-98e20d0872da",
   "version": "7",
   "dialect": "postgresql",
@@ -626,6 +626,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "card_id": {
+          "name": "card_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "commenter_user_id": {
           "name": "commenter_user_id",
           "type": "text",
@@ -670,6 +676,19 @@
         }
       },
       "foreignKeys": {
+        "comment_card_id_card_id_fk": {
+          "name": "comment_card_id_card_id_fk",
+          "tableFrom": "comment",
+          "tableTo": "card",
+          "columnsFrom": [
+            "card_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "comment_commenter_user_id_user_id_fk": {
           "name": "comment_commenter_user_id_user_id_fk",
           "tableFrom": "comment",
@@ -680,7 +699,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "custom_fk": {

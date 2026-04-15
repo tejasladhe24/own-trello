@@ -86,9 +86,12 @@ export const $comment = pgTable(
   {
     id: text("id").primaryKey(),
     parentId: text("parent_id"),
+    cardId: text("card_id")
+      .notNull()
+      .references(() => $card.id, { onDelete: "cascade" }),
     commenterUserId: text("commenter_user_id")
       .notNull()
-      .references(() => $user.id),
+      .references(() => $user.id, { onDelete: "cascade" }),
     content: text("content").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
@@ -111,6 +114,7 @@ export const schema = {
   boardMemberRole: $boardMemberRole,
 
   // tables
+  board: $board,
   boardMember: $boardMember,
   list: $list,
   card: $card,
